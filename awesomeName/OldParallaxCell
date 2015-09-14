@@ -1,0 +1,350 @@
+//
+//  MPParallaxCollectionViewCell.m
+//  MPPercentDriven
+//
+//  Created by Alex Manzella on 27/05/14.
+//  Copyright (c) 2014 mpow. All rights reserved.
+//
+
+#import "MPParallaxCollectionViewCell.h"
+
+@implementation MPParallaxCollectionViewCell
+
+
+- (id)initWithFrame:(CGRect)frame
+{
+self = [super initWithFrame:frame];
+if (self) {
+
+///IMAGE
+self.clipsToBounds=YES;
+self.imageView=[[UIImageView alloc] initWithFrame:CGRectInset(self.bounds, -MAX_HORIZONTAL_PARALLAX, 0)];
+self.imageView.contentMode=UIViewContentModeScaleAspectFill;
+self.imageView.clipsToBounds=YES;
+self.imageView.autoresizingMask=UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+[self addSubview:self.imageView];
+
+///FADE
+UIImage *fade = [UIImage imageNamed:@"TableCellFade.png"];
+UIImageView *fadeView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+self.fadeViewTwo = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+self.fadeViewTwo.image = fade;
+fadeView.image = fade;
+[fadeView setAlpha:1.0];
+[self.fadeViewTwo setAlpha:0.345];
+fadeView.tag = 3737;
+[self addSubview:fadeView];
+[self addSubview:self.fadeViewTwo];
+
+///BLURVIEW
+UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+self.blurView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+[self.blurView setFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+self.blurView.tag = 8888;
+UIVibrancyEffect *vibrancyEffect = [UIVibrancyEffect effectForBlurEffect:blurEffect];
+UIVisualEffectView *vibrancyEffectView = [[UIVisualEffectView alloc] initWithEffect:vibrancyEffect];
+[vibrancyEffectView setFrame:self.frame];
+[self.blurView.contentView addSubview:vibrancyEffectView];
+[self addSubview:self.blurView];
+[self.blurView setAlpha:.26];
+
+//BLACK-VIEW
+self.blackView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+self.blackView.backgroundColor = [UIColor blackColor];
+self.blackView.alpha = 0.0;
+self.blackView.tag = 3636;
+[self addSubview:self.blackView];
+
+
+///SCROLLVIEW
+self.scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+//[self.scrollView setContentSize:CGSizeMake(self.frame.size.width, self.frame.size.height+300)];
+[self.scrollView setContentSize:CGSizeMake(self.frame.size.width, self.frame.size.height)];
+self.scrollView.delegate = self;
+self.scrollView.delaysContentTouches = NO;
+//self.scrollView.directionalLockEnabled = NO;
+self.scrollView.bounces = YES;
+self.scrollView.alwaysBounceVertical = YES;
+self.scrollView.tag = 3939;
+self.scrollView.decelerationRate = UIScrollViewDecelerationRateFast;
+[self.scrollView setScrollsToTop:YES];
+[self addSubview:self.scrollView];
+
+
+///TITLE
+self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(18, self.frame.size.height/2+50, self.frame.size.width-54, 120)];
+if ([UIScreen mainScreen].bounds.size.height <= 568.0 )/*iPhone 4 or 5*/ {
+self.titleLabel.font = [UIFont fontWithName:@"AppleSDGothicNeo-Medium" size:22.75];
+} else {
+self.titleLabel.font = [UIFont fontWithName:@"AppleSDGothicNeo-Medium" size:28];
+}
+self.titleLabel.textColor = [UIColor whiteColor];
+self.titleLabel.numberOfLines = 5;
+self.titleLabel.tag = 3838;
+self.titleLabel.layer.shadowColor = [UIColor blackColor].CGColor;
+self.titleLabel.layer.shadowOpacity = 0.14;
+self.titleLabel.layer.shadowRadius = 0.25;
+self.titleLabel.layer.shadowOffset = CGSizeMake(.25f, .25f);
+[self.scrollView addSubview:self.titleLabel];
+[self.scrollView bringSubviewToFront:self.titleLabel];
+
+///TEASER
+self.teaserLabel = [[UILabel alloc] initWithFrame:CGRectMake(18, self.titleLabel.center.y+20, self.frame.size.width-46, 80)];
+if ([UIScreen mainScreen].bounds.size.height <= 568.0 ) {
+self.teaserLabel.font = [UIFont fontWithName:@"AppleSDGothicNeo-Regular" size:15.5];
+} else {
+self.teaserLabel.font = [UIFont fontWithName:@"AppleSDGothicNeo-Regular" size:17.5];
+}
+self.teaserLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.80];
+self.teaserLabel.numberOfLines = 5;
+self.teaserLabel.tag = 5555;
+self.teaserLabel.layer.shadowColor = [UIColor blackColor].CGColor;
+self.teaserLabel.layer.shadowOpacity = 0.12;
+self.teaserLabel.layer.shadowRadius = 0.20;
+self.teaserLabel.layer.shadowOffset = CGSizeMake(.20f, .20f);
+[self.scrollView addSubview:self.teaserLabel];
+[self.scrollView bringSubviewToFront:self.teaserLabel];
+
+///CONTENT
+self.contentLabel = [[UILabel alloc] initWithFrame:CGRectMake(18, self.teaserLabel.center.y+4, self.frame.size.width-44, 380)];
+if ([UIScreen mainScreen].bounds.size.height <= 568.0 ) {
+self.contentLabel.font = [UIFont fontWithName:@"AppleSDGothicNeo-Regular" size:15.5];
+} else {
+self.contentLabel.font = [UIFont fontWithName:@"AppleSDGothicNeo-Regular" size:17.5];
+}
+self.contentLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.82];
+self.contentLabel.numberOfLines = 0;
+self.contentLabel.tag = 9999;
+self.contentLabel.layer.shadowColor = [UIColor blackColor].CGColor;
+self.contentLabel.layer.shadowOpacity = 0.12;
+self.contentLabel.layer.shadowRadius = 0.20;
+self.contentLabel.layer.shadowOffset = CGSizeMake(.20f, .20f);
+self.contentLabel.alpha = 0.0;
+self.contentLabel.lineBreakMode = NSLineBreakByWordWrapping;
+//[self.scrollView addSubview:self.contentLabel];
+//[self.scrollView bringSubviewToFront:self.contentLabel];
+
+self.bottomFade = [[UIImageView alloc] initWithFrame:CGRectMake(0, self.frame.size.height-60, self.frame.size.width, 140)];
+self.bottomFade.image = [UIImage imageNamed:@"fadeTwo"];
+self.bottomFade.alpha = 0.0;
+[self addSubview:self.bottomFade];
+
+///WEBVIEW
+self.webview = [[UIWebView alloc] initWithFrame:CGRectMake(0, self.frame.size.height, self.frame.size.width, self.frame.size.height)];
+self.webview.backgroundColor = [UIColor whiteColor];
+self.webview.scrollView.decelerationRate = UIScrollViewDecelerationRateNormal;
+[self addSubview:self.webview];
+self.webview.delegate = self;
+//self.webview.suppressesIncrementalRendering = YES;
+self.webview.scrollView.bounces = YES;
+self.webview.hidden = YES;
+[self.webview loadRequest:self.request];
+
+UIToolbar *bar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, self.frame.size.height-48, self.frame.size.width, 48)];
+bar.translucent = YES;
+[self.webview addSubview:bar];
+
+UIView *bottomBar = [[UIView alloc] initWithFrame:CGRectMake(0, self.frame.size.height-48, self.frame.size.width, 48)];
+bottomBar.backgroundColor = [UIColor clearColor];
+bottomBar.layer.shadowColor = [UIColor blackColor].CGColor;
+bottomBar.layer.shadowOpacity = 0.155;
+bottomBar.layer.shadowRadius = 0.20;
+bottomBar.layer.shadowOffset = CGSizeMake(-.20f,-.20f);
+
+self.closeButton = [[UIButton alloc] initWithFrame:CGRectMake(15, 13.5, 21, 21)];
+[self.closeButton setBackgroundImage:[UIImage imageNamed:@"closeNew"] forState:UIControlStateNormal];
+[self.closeButton addTarget:self action:@selector(closeWebview) forControlEvents:UIControlEventTouchUpInside];
+[bottomBar addSubview:self.closeButton];
+[self.webview addSubview:bottomBar];
+
+self.toolBarshareButton = [[UIButton alloc] initWithFrame:CGRectMake(bottomBar.frame.size.width-130, 8, 30, 30)];
+[self.toolBarshareButton setBackgroundImage:[UIImage imageNamed:@"shareDark"] forState:UIControlStateNormal];
+[bottomBar addSubview:self.toolBarshareButton];
+[self.webview addSubview:bottomBar];
+
+self.toolBarfavButton = [[UIButton alloc] initWithFrame:CGRectMake(bottomBar.frame.size.width-60, 5.25, 35.5, 35.5)];
+[self.toolBarfavButton setBackgroundImage:[UIImage imageNamed:@"favDark"] forState:UIControlStateNormal];
+[bottomBar addSubview:self.toolBarfavButton];
+[self.webview addSubview:bottomBar];
+
+
+///SOURCE & TIME AGO
+self.sourceTimeAgoLabel = [[UILabel alloc] initWithFrame:CGRectMake(18, self.teaserLabel.center.y-86, self.frame.size.width-46, 82)];
+if ([UIScreen mainScreen].bounds.size.height <= 568.0 ) {
+self.sourceTimeAgoLabel.font = [UIFont fontWithName:@"AppleSDGothicNeo-Medium" size:12.5];
+} else {
+self.sourceTimeAgoLabel.font = [UIFont fontWithName:@"AppleSDGothicNeo-Medium" size:14.2];
+}
+self.sourceTimeAgoLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.794];
+self.sourceTimeAgoLabel.numberOfLines = 5;
+self.sourceTimeAgoLabel.tag = 555511;
+self.sourceTimeAgoLabel.layer.shadowColor = [UIColor blackColor].CGColor;
+self.sourceTimeAgoLabel.layer.shadowOpacity = 0.12;
+self.sourceTimeAgoLabel.layer.shadowRadius = 0.20;
+self.sourceTimeAgoLabel.layer.shadowOffset = CGSizeMake(.20f, .20f);
+[self.scrollView addSubview:self.sourceTimeAgoLabel];
+[self.sourceTimeAgoLabel setAlpha:0.0];
+[self.scrollView bringSubviewToFront:self.sourceTimeAgoLabel];
+
+
+///BUTTONS
+
+self.homeButton = [[UIButton alloc] initWithFrame:CGRectMake(44, self.contentLabel.center.y+196, 29, 29)];
+[self.homeButton setBackgroundImage:[UIImage imageNamed:@"home"] forState:UIControlStateNormal];
+[self.scrollView addSubview:self.homeButton];
+
+self.readMoreButton = [[UIButton alloc] initWithFrame:CGRectMake(self.homeButton.frame.origin.x+82, self.contentLabel.center.y+198, 27, 27)];
+[self.readMoreButton setBackgroundImage:[UIImage imageNamed:@"article"] forState:UIControlStateNormal];
+[self.readMoreButton setAlpha:0.0];
+[self.readMoreButton addTarget:self action:@selector(this) forControlEvents:UIControlEventTouchUpInside];
+[self.scrollView addSubview:self.readMoreButton];
+
+self.shareButton = [[UIButton alloc] initWithFrame:CGRectMake(self.readMoreButton.frame.origin.x+82, self.contentLabel.center.y+196, 28, 28)];
+[self.shareButton setBackgroundImage:[UIImage imageNamed:@"share"] forState:UIControlStateNormal];
+[self.scrollView addSubview:self.shareButton];
+
+self.favButton = [[UIButton alloc] initWithFrame:CGRectMake(self.shareButton.frame.origin.x+82, self.contentLabel.center.y+195.4, 33, 33)];
+//self.favButton.center = CGPointMake(self.frame.size.width/2+120, self.contentLabel.frame.origin.y+408);
+[self.favButton setBackgroundImage:[UIImage imageNamed:@"stars"] forState:UIControlStateNormal];
+[self.scrollView addSubview:self.favButton];
+
+
+}
+return self;
+}
+
+-(void)this {
+NSLog(@"Button Tapped");
+self.webview.hidden = NO;
+[self scrollThatBitch];
+}
+
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView {
+
+//NSLog(@"Scroll :%f", scrollView.contentOffset.y);
+
+self.webview.frame = CGRectMake(0, self.frame.size.height+668 - scrollView.contentOffset.y*2, self.frame.size.width, self.frame.size.height);
+
+if (scrollView.contentOffset.y > 274) {
+[UIView animateWithDuration:0.3 animations:^{
+[self.readMoreButton setAlpha:0.64];
+[self.shareButton setAlpha:0.64];
+[self.favButton setAlpha:0.64];
+[self.sourceTimeAgoLabel setAlpha:0.64];
+[self.homeButton setAlpha:0.64];
+}];
+}
+else {
+[UIView animateWithDuration:0.26 animations:^{
+[self.readMoreButton setAlpha:0.0];
+[self.shareButton setAlpha:0.0];
+[self.favButton setAlpha:0.0];
+[self.sourceTimeAgoLabel setAlpha:0.0];
+[self.homeButton setAlpha:0.0];
+}];
+}
+
+if (scrollView.contentOffset.y > 0) {
+float blurAlpha = scrollView.contentOffset.y / 300.0f;
+float blackAlpha = scrollView.contentOffset.y / 480.0f;
+float contentAlpha = scrollView.contentOffset.y / 300.0f;
+[self.contentLabel setAlpha:contentAlpha];
+//[self.sourceTimeAgoLabel setAlpha:contentAlpha/2];
+[self.bottomFade setAlpha:contentAlpha];
+if (blackAlpha >= .7) {
+[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+[self bringSubviewToFront:[self.titleLabel superview]];
+[[self.titleLabel superview] bringSubviewToFront:self.titleLabel];
+[self bringSubviewToFront:[self.webview superview]];//**********
+[[self.webview superview] bringSubviewToFront:self.webview];//**********
+
+return;
+}
+[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+self.titleLabel.frame = CGRectMake(18, self.frame.size.height/2-scrollView.contentOffset.y/8.0+36, self.frame.size.width-55, 150);
+[self bringSubviewToFront:[self.titleLabel superview]];
+[[self.titleLabel superview] bringSubviewToFront:self.titleLabel];
+[self.blurView setAlpha:blurAlpha+0.26];
+[self.blackView setAlpha:blackAlpha];
+
+[self bringSubviewToFront:[self.webview superview]];//**********
+[[self.webview superview] bringSubviewToFront:self.webview];//**********
+
+}
+if (scrollView.contentOffset.y < 10) {
+[self setTextAlpha];
+}
+}
+
+-(void)scrollThatBitch {
+
+[self.scrollView setContentOffset:CGPointMake(0, self.frame.size.height) animated:YES];
+}
+
+-(void)closeWebview {
+
+[self.webview stopLoading];
+[self.scrollView setContentOffset:CGPointMake(0, 300) animated:YES];
+[self performSelector:@selector(hideWebview) withObject:nil afterDelay:0.5];
+}
+-(void)hideWebview {
+[self.webview setHidden:YES];
+}
+-(void)webViewDidStartLoad:(UIWebView *)webView {
+NSLog(@"Starting");
+}
+
+//-(void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView {
+//    if (scrollView.contentOffset.y > 40) {
+//        [self.scrollView setContentOffset:CGPointMake(0, 296) animated:YES];
+//    }
+//}
+//-(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+//    if (scrollView.contentOffset.y > 40) {
+//        [self.scrollView setContentOffset:CGPointMake(0, 296) animated:YES];
+//    }
+//}
+//-(void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
+//    if (scrollView.contentOffset.y > 40) {
+//        [self.scrollView setContentOffset:CGPointMake(0, 296) animated:YES];
+//    }
+//}
+
+
+-(void)setTextAlpha {
+
+[UIView animateWithDuration:0.2 animations:^{
+[self.contentLabel setAlpha:0.0];
+} completion:^(BOOL finished) {
+
+}];
+}
+
+- (void)setParallaxValue:(CGFloat)parallaxValue{
+
+_parallaxValue=parallaxValue;
+
+CGRect frame=self.imageView.frame;
+frame.origin.x=-MAX_HORIZONTAL_PARALLAX + parallaxValue*MAX_HORIZONTAL_PARALLAX;
+self.imageView.frame=frame;
+
+if ([[self delegate] respondsToSelector:@selector(cell:changeParallaxValueTo:)]) {
+[[self delegate] cell:self changeParallaxValueTo:parallaxValue];
+}
+
+}
+
+
+- (void)dealloc{
+self.delegate=nil;
+}
+
+- (UIImage *)image{
+return self.imageView.image;
+}
+
+- (void)setImage:(UIImage *)image{
+self.imageView.image=image;
+}
+
+@end

@@ -1,0 +1,74 @@
+///SOURCE & TIME AGO
+self.sourceTimeAgoLabel = [[UILabel alloc] initWithFrame:CGRectMake(18, self.titleLabel.frame.origin.y+66, self.frame.size.width-46, 80)];
+if ([UIScreen mainScreen].bounds.size.height <= 568.0 ) {
+self.sourceTimeAgoLabel.font = [UIFont fontWithName:@"AppleSDGothicNeo-Medium" size:11];
+} else {
+self.sourceTimeAgoLabel.font = [UIFont fontWithName:@"AppleSDGothicNeo-Medium" size:13];
+}
+self.sourceTimeAgoLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.94];
+self.sourceTimeAgoLabel.numberOfLines = 5;
+self.sourceTimeAgoLabel.tag = 5555;
+self.sourceTimeAgoLabel.layer.shadowColor = [UIColor blackColor].CGColor;
+self.sourceTimeAgoLabel.layer.shadowOpacity = 0.12;
+self.sourceTimeAgoLabel.layer.shadowRadius = 0.20;
+self.sourceTimeAgoLabel.layer.shadowOffset = CGSizeMake(.20f, .20f);
+[self.scrollView addSubview:self.sourceTimeAgoLabel];
+[self.scrollView bringSubviewToFront:self.sourceTimeAgoLabel];
+
+
+
+
+///BUTTONS
+self.readMoreButton = [[UIButton alloc] initWithFrame:CGRectMake(20, self.contentLabel.center.y+200, 138, 36)];
+//self.readMoreButton.center = CGPointMake(self.frame.size.width/2-102, self.contentLabel.frame.origin.y+400);
+self.readMoreButton.titleLabel.font = [UIFont fontWithName:@"AppleSDGothicNeo-Medium" size:14.5];
+//        CALayer *btn1 = [self.readMoreButton layer];
+//        [btn1 setMasksToBounds:YES];[btn1 setCornerRadius:18.0f];[btn1 setBorderWidth:1.0f];
+//        [btn1 setBorderColor:[UIColor colorWithWhite:1.0 alpha:1.0].CGColor];
+[self.readMoreButton setTitle:@"read more" forState:UIControlStateNormal];
+[self.readMoreButton setAlpha:0.0];
+[self.readMoreButton addTarget:self action:@selector(this) forControlEvents:UIControlEventTouchUpInside];
+[self.scrollView addSubview:self.readMoreButton];
+
+self.shareButton = [[UIButton alloc] initWithFrame:CGRectMake(self.readMoreButton.frame.origin.x+134, 100, 92, 36)];
+self.shareButton.center = CGPointMake(self.frame.size.width/2+34, self.contentLabel.frame.origin.y+408);
+[self.shareButton setTitle:@"share" forState:UIControlStateNormal];
+self.shareButton.titleLabel.font = [UIFont fontWithName:@"AppleSDGothicNeo-Medium" size:14.5];
+//        CALayer *btn2 = [self.shareButton layer];
+//        [btn2 setMasksToBounds:YES];[btn2 setCornerRadius:18.0f];[btn2 setBorderWidth:1.0f];
+//        [btn2 setBorderColor:[UIColor colorWithWhite:1.0 alpha:1.0].CGColor];
+[self.scrollView addSubview:self.shareButton];
+
+//self.favButton = [[UIButton alloc] initWithFrame:CGRectMake(self.shareButton.frame.origin.x+10, 100, 68, 34)];
+self.favButton = [[UIButton alloc] initWithFrame:CGRectMake(self.shareButton.frame.origin.x+10, 100, 36, 36)];
+self.favButton.center = CGPointMake(self.frame.size.width/2+120, self.contentLabel.frame.origin.y+408);
+//[self.favButton setTitle:@"fav" forState:UIControlStateNormal];
+[self.favButton setBackgroundImage:[UIImage imageNamed:@"stars"] forState:UIControlStateNormal];
+self.favButton.titleLabel.font = [UIFont fontWithName:@"AppleSDGothicNeo-Medium" size:14.5];
+//        CALayer *btn3 = [self.favButton layer];
+//        [btn3 setMasksToBounds:YES];[btn3 setCornerRadius:3.5f];[btn3 setBorderWidth:1.0f];
+//        [btn3 setBorderColor:[UIColor colorWithWhite:1.0 alpha:1.0].CGColor];
+[self.scrollView addSubview:self.favButton];
+
+
+
+
+
+Images array for cellforitema tindex path
+
+//    if (self.imagesArray.count <= indexPath.row+1) {
+//        cell.image = [UIImage imageNamed:@"sanFran.jpg"];
+//    } else {
+//        cell.image = [self.imagesArray objectAtIndex:indexPath.row];
+//    }
+
+
+
+Time and day
+
+NSDate *now = [NSDate date];
+NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+[dateFormatter setDateFormat:@"EEEE, MMMM dd"];
+NSString *currentDate = [dateFormatter stringFromDate:now];
+NSString *finalString = [NSString stringWithFormat:@"%@", currentDate];
+
