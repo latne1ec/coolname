@@ -133,14 +133,8 @@ BOOL theBool;
         [self.scrollView bringSubviewToFront:self.titleLabel];
         
         ///TEASER
-        self.teaserLabel = [[UILabel alloc] initWithFrame:CGRectMake(18, self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height -30, self.frame.size.width-46, 80)];
+        self.teaserLabel = [[UILabel alloc] initWithFrame:CGRectMake(18, self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height, self.frame.size.width-46, 80)];
 
-//        CGRect frame = self.teaserLabel.frame;
-//        frame.origin.y = self.titleLabel.frame.origin.y + self.titleLabel.frame.size.height + 10;
-//        [self.teaserLabel setFrame:frame];
-        
-        
-     
         if ([UIScreen mainScreen].bounds.size.height <= 568.0 ) {
             self.teaserLabel.font = [UIFont fontWithName:@"AppleSDGothicNeo-Regular" size:15.5];
         } else {

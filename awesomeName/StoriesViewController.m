@@ -135,7 +135,18 @@ int j;
     
     MPParallaxCollectionViewCell* cell =  (MPParallaxCollectionViewCell *)[collectionView dequeueReusableCellWithReuseIdentifier:kCell forIndexPath:indexPath];
     
+
+    
     PFObject *object = [self.posts objectAtIndex:indexPath.item];
+//    static double lineLength = 23;
+//    NSString *title =  [object objectForKey:@"postTitle"];
+//    double numberOfLines = (ceil(title.length/lineLength));
+//    if (numberOfLines > 3) {numberOfLines = 3;};
+//    int yFactor = cell.titleLabel.font.pointSize * numberOfLines;
+//    cell.factor = yFactor;
+//    CGRect cellFrame = cell.teaserLabel.frame;
+//    cellFrame.origin.y = cell.titleLabel.frame.origin.y + yFactor;
+//    cell.teaserLabel.frame = cellFrame;
     
     if (indexPath.item == 0) {
         //cell.homeButtonLabel.alpha = 0.0;
@@ -170,7 +181,18 @@ int j;
     
     cell.progressView.alpha = 1.0;
     cell.titleLabel.text = [object objectForKey:@"postTitle"];
+
     cell.teaserLabel.text = [NSString stringWithFormat:@"Trending in %@ from %@",[object objectForKey:@"postCategory"], [object objectForKey:@"postSource"]];
+    
+    //Adjust teaserLabel y-bounds based on number of lines in titleLabel
+    int numberOfLines = [self numberOflines:cell.titleLabel];
+    if (numberOfLines > 3) {numberOfLines = 3;};
+    int yFactor = ((numberOfLines-2)*15);
+
+    CGRect cellFrame = cell.teaserLabel.frame;
+    cellFrame.origin.y = cell.titleLabel.frame.origin.y + cell.titleLabel.font.lineHeight*numberOfLines-yFactor;
+    cell.teaserLabel.frame = cellFrame;
+    
     cell.sourceTimeAgoLabel.text = [NSString stringWithFormat:@"from %@", [object objectForKey:@"postCategory"]];
     
     if (self.imagesArray.count <= indexPath.item+1) {
@@ -183,6 +205,12 @@ int j;
     _currentRow = indexPath.item;
     
     return cell;
+}
+
+-(int) numberOflines: (UILabel *) label {
+    CGRect rect = [label.text boundingRectWithSize:CGSizeMake(label.bounds.size.width, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName : label.font} context:nil];
+    
+    return ceil(rect.size.height/label.font.lineHeight);
 }
 
 //-(void)tapGestureStarted:(UIGestureRecognizer *)sender {
